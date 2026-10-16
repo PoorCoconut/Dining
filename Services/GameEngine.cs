@@ -17,7 +17,7 @@ public sealed class GameEngine
     private const double PopupSeconds = 1.2;
 
     private static readonly string[] BodyColors =
-        { "#FF7A59", "#4FB0C6", "#9B7EDE", "#F7B538", "#7BC86C", "#EF6F9B" };
+        { "#E4572E", "#2F9C95", "#7B5EA7", "#6BA43A", "#EF6F9B", "#3B6EA5" };
 
     private static readonly string[] SkinColors =
         { "#FFE0BD", "#F1C27D", "#D9A066", "#A8713F", "#FDEBD0" };

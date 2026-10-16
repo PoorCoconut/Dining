@@ -82,11 +82,11 @@ code {
    ===================================================================== */
 
 :root {
-    --ink: #1d2b24;
+    --ink: #2b1a12;
     --cherry: #e63e32;
     --butter: #f4b63f;
-    --counter: #1f3d38;
-    --counter-edge: #2f5a52;
+    --counter: #3b2418;
+    --counter-edge: #5a3a28;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -97,53 +97,46 @@ body {
     font-family: 'Fredoka', 'Segoe UI', system-ui, sans-serif;
     color: var(--ink);
     overflow: hidden;
-    background: #dcffa8;
+    background: #ffe3a0;
 }
 
-/* ---------- Living background (replaces the flat pale green) ---------- */
+/* ---------- Diner tile background: tilted checker drifting to the top-right ---------- */
 
 .rr-app {
     position: relative;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: linear-gradient(115deg, #e3ffaf 0%, #c9f6c4 25%, #fff5a6 50%, #bdeee8 75%, #e3ffaf 100%);
-    background-size: 300% 300%;
-    animation: rr-drift 24s ease-in-out infinite;
+    background: #ffe3a0;
 }
 
-.rr-app::before,
+/* Oversized, rotated layer of two close butter tones so it reads as texture, not noise. */
+.rr-app::before {
+    content: "";
+    position: absolute;
+    inset: -60%;
+    z-index: 0;
+    pointer-events: none;
+    background: conic-gradient(#ffeab5 0 25%, #ffd98a 0 50%, #ffeab5 0 75%, #ffd98a 0);
+    background-size: 120px 120px;
+    transform: rotate(-14deg);
+    animation: rr-tiles 20s linear infinite;
+}
+
+/* Soft light in the middle, ketchup-tinted vignette at the edges keeps focus on the game. */
 .rr-app::after {
     content: "";
     position: absolute;
-    inset: -25%;
-    pointer-events: none;
+    inset: 0;
     z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 40%, rgba(255, 247, 226, .55) 0%, rgba(255, 247, 226, 0) 55%, rgba(150, 50, 25, .28) 100%);
 }
 
-.rr-app::before {
-    background:
-        radial-gradient(circle at 18% 28%, rgba(255, 255, 255, .55), transparent 16%),
-        radial-gradient(circle at 82% 22%, rgba(255, 255, 255, .45), transparent 12%),
-        radial-gradient(circle at 64% 78%, rgba(255, 255, 255, .40), transparent 18%);
-    animation: rr-float-a 28s ease-in-out infinite alternate;
+/* Shift by whole tile periods (2 x 1) so the loop is seamless. */
+@keyframes rr-tiles {
+    to { background-position: 240px -120px; }
 }
-
-.rr-app::after {
-    background:
-        radial-gradient(circle at 30% 80%, rgba(244, 182, 63, .22), transparent 14%),
-        radial-gradient(circle at 75% 55%, rgba(230, 62, 50, .12), transparent 12%),
-        radial-gradient(circle at 10% 55%, rgba(79, 176, 198, .20), transparent 14%);
-    animation: rr-float-b 36s ease-in-out infinite alternate;
-}
-
-@keyframes rr-drift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-}
-
-@keyframes rr-float-a { to { transform: translate(6%, 4%) rotate(8deg); } }
-@keyframes rr-float-b { to { transform: translate(-5%, -6%) rotate(-10deg); } }
 
 .rr-screen {
     position: absolute;
@@ -212,7 +205,7 @@ body {
     text-align: left;
     font-size: clamp(.85rem, 1.9vh, 1.05rem);
     line-height: 1.45;
-    background: rgba(255, 255, 255, .62);
+    background: rgba(255, 247, 226, .88);
     border: 3px solid var(--ink);
     border-radius: 14px;
 }
@@ -359,7 +352,7 @@ body {
 .rr-clock {
     min-width: 120px;
     padding: 6px 12px 8px;
-    background: rgba(255, 255, 255, .7);
+    background: rgba(255, 247, 226, .9);
     border: 3px solid var(--ink);
     border-radius: 14px;
 }
@@ -379,10 +372,10 @@ body {
     margin-top: 6px;
     overflow: hidden;
     border-radius: 999px;
-    background: rgba(29, 43, 36, .15);
+    background: rgba(43, 26, 18, .15);
 }
 
-.rr-clock-fill { height: 100%; background: #3a9d5d; transition: width .08s linear; }
+.rr-clock-fill { height: 100%; background: #5e8c3a; transition: width .08s linear; }
 
 .rr-clock.low { border-color: var(--cherry); animation: rr-pulse .6s ease-in-out infinite alternate; }
 .rr-clock.low .rr-clock-num { color: var(--cherry); }
@@ -399,19 +392,6 @@ body {
     align-items: flex-end;
     padding: 64px 4vw 18px;
     min-height: 0;
-}
-
-.rr-restaurant::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 38px;
-    z-index: 0;
-    background: conic-gradient(rgba(29, 43, 36, .09) 25%, transparent 0 50%, rgba(29, 43, 36, .09) 0 75%, transparent 0);
-    background-size: 52px 52px;
-    background-position: bottom left;
 }
 
 .rr-table {
@@ -479,7 +459,7 @@ body {
     overflow: hidden;
     border: 2px solid var(--ink);
     border-radius: 999px;
-    background: rgba(29, 43, 36, .15);
+    background: rgba(43, 26, 18, .15);
 }
 
 .patience-fill { height: 100%; background: #4fb85a; transition: width .08s linear, background-color .3s; }
@@ -521,12 +501,12 @@ body {
     pointer-events: none;
     font-family: 'Bowlby One', 'Fredoka', sans-serif;
     font-size: clamp(1.1rem, 3vh, 1.8rem);
-    text-shadow: 2px 2px 0 #fff, -2px 2px 0 #fff, 2px -2px 0 #fff, -2px -2px 0 #fff;
+    text-shadow: 2px 2px 0 #fff7e2, -2px 2px 0 #fff7e2, 2px -2px 0 #fff7e2, -2px -2px 0 #fff7e2;
     animation: popup-rise 1.2s ease-out forwards;
 }
 
 .popup small { display: block; font-size: .65em; }
-.popup.good { color: #1f7a3a; }
+.popup.good { color: #3f7a1f; }
 .popup.bad { color: var(--cherry); }
 
 @keyframes popup-rise {
@@ -604,7 +584,7 @@ body {
     min-width: 0;
     min-height: 0;
     padding: 10px;
-    background: #fff;
+    background: #fffaf0;
     border: 4px solid var(--ink);
     border-radius: 14px;
 }
@@ -625,7 +605,7 @@ body {
     height: 12px;
     border: 3px solid var(--ink);
     border-radius: 50%;
-    background: #e8efed;
+    background: #f3e6c8;
 }
 
 .rr-tray-empty {
@@ -637,7 +617,7 @@ body {
     padding: 0 8px;
     text-align: center;
     font-size: .85rem;
-    color: rgba(29, 43, 36, .5);
+    color: rgba(43, 26, 18, .5);
 }
 
 .rr-tray-bar { display: flex; gap: 6px; }
@@ -651,7 +631,7 @@ body {
     padding: 4px 6px;
     color: var(--ink);
     cursor: pointer;
-    background: #e8efed;
+    background: #f3e6c8;
     border: 2px solid var(--ink);
     border-radius: 8px;
 }
@@ -659,7 +639,7 @@ body {
 .mini-btn:hover:not(:disabled) { background: var(--butter); }
 .mini-btn:disabled { opacity: .4; cursor: default; }
 
-.rr-hint { margin: 0; text-align: center; font-size: .72rem; color: rgba(29, 43, 36, .65); }
+.rr-hint { margin: 0; text-align: center; font-size: .72rem; color: rgba(43, 26, 18, .65); }
 
 @media (max-width: 700px) {
     .rr-kitchen { grid-template-columns: 2fr 1fr; }

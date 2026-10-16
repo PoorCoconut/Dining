@@ -11,23 +11,23 @@
     <svg class="figure" viewBox="0 0 100 128" aria-hidden="true">
         @if (Customer.Shape == BodyShape.Triangle)
         {
-            <polygon points="50,62 92,124 8,124" fill="@Customer.BodyColor" stroke="#1d2b24" stroke-width="4" stroke-linejoin="round" />
+            <polygon points="50,62 92,124 8,124" fill="@Customer.BodyColor" stroke="#2b1a12" stroke-width="4" stroke-linejoin="round" />
         }
         else
         {
-            <rect x="12" y="62" width="76" height="62" rx="8" fill="@Customer.BodyColor" stroke="#1d2b24" stroke-width="4" stroke-linejoin="round" />
+            <rect x="12" y="62" width="76" height="62" rx="8" fill="@Customer.BodyColor" stroke="#2b1a12" stroke-width="4" stroke-linejoin="round" />
         }
 
-        <circle cx="50" cy="34" r="27" fill="@Customer.SkinColor" stroke="#1d2b24" stroke-width="4" />
-        <circle cx="40" cy="31" r="3" fill="#1d2b24" />
-        <circle cx="60" cy="31" r="3" fill="#1d2b24" />
+        <circle cx="50" cy="34" r="27" fill="@Customer.SkinColor" stroke="#2b1a12" stroke-width="4" />
+        <circle cx="40" cy="31" r="3" fill="#2b1a12" />
+        <circle cx="60" cy="31" r="3" fill="#2b1a12" />
 
         @if (ShowBrows)
         {
-            <path d="M33 22 L46 27 M67 22 L54 27" fill="none" stroke="#1d2b24" stroke-width="3.5" stroke-linecap="round" />
+            <path d="M33 22 L46 27 M67 22 L54 27" fill="none" stroke="#2b1a12" stroke-width="3.5" stroke-linecap="round" />
         }
 
-        <path d="@Mouth" fill="none" stroke="#1d2b24" stroke-width="3.5" stroke-linecap="round" />
+        <path d="@Mouth" fill="none" stroke="#2b1a12" stroke-width="3.5" stroke-linecap="round" />
 
         @if (Customer.State == CustomerState.Happy)
         {
