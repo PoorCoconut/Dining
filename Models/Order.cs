@@ -34,4 +34,19 @@ public sealed class Order
 
         return new Order(layers);
     }
+
+    /// <summary>The rare VIP order: bun, 8 to 11 fillings, bun.</summary>
+    public static Order CreateMassive(Random rng)
+    {
+        int fillingCount = rng.Next(8, 12);
+
+        var layers = new List<IngredientType>(fillingCount + 2) { IngredientType.Bun };
+        for (int i = 0; i < fillingCount; i++)
+        {
+            layers.Add(Ingredient.Fillings[rng.Next(Ingredient.Fillings.Count)].Type);
+        }
+        layers.Add(IngredientType.Bun);
+
+        return new Order(layers);
+    }
 }

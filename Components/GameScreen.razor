@@ -25,6 +25,11 @@
                     <CustomerView @key="@($"customer-{customer.Id}")" Customer="customer" OnServe="@(() => ServeTable(table))" />
                 }
 
+                @foreach (var burst in Game.Bursts.Where(b => b.Table == table))
+                {
+                    <ParticleBurstView @key="@($"burst-{burst.Id}")" Burst="burst" />
+                }
+
                 @foreach (var popup in Game.Popups.Where(p => p.Table == table))
                 {
                     <div @key="@($"popup-{popup.Id}")" class="popup @(popup.IsGood ? "good" : "bad")">

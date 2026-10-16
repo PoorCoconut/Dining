@@ -1,5 +1,6 @@
-@* Draws layers bottom to top (index 0 sits lowest). Used by order bubbles, the tray and the title screen. *@
-<div class="stack @CssClass">
+@* Draws layers bottom to top (index 0 sits lowest). Used by order bubbles, the tray and the title screen.
+   Tall burgers (VIP orders) automatically shrink their layers so they still fit. *@
+<div class="stack @CssClass @Density">
     @for (int i = 0; i < Layers.Count; i++)
     {
         <IngredientLayer @key="i" Type="Layers[i]" IsTop="@(i > 0)" />
@@ -10,4 +11,12 @@
     [Parameter] public IReadOnlyList<IngredientType> Layers { get; set; } = Array.Empty<IngredientType>();
 
     [Parameter] public string? CssClass { get; set; }
+
+    private string Density => Layers.Count switch
+    {
+        > 12 => "d3",
+        > 8 => "d2",
+        > 5 => "d1",
+        _ => ""
+    };
 }

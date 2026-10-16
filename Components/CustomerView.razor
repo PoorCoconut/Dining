@@ -1,7 +1,7 @@
 @using System.Globalization
 
 <button type="button"
-        class="customer state-@(Customer.State.ToString().ToLowerInvariant())"
+        class="customer state-@(Customer.State.ToString().ToLowerInvariant()) @(Customer.IsVip ? "vip" : "")"
         @onclick="OnServe"
         aria-label="Serve this customer">
     <div class="bubble">
@@ -21,6 +21,11 @@
         <circle cx="50" cy="34" r="27" fill="@Customer.SkinColor" stroke="#2b1a12" stroke-width="4" />
         <circle cx="40" cy="31" r="3" fill="#2b1a12" />
         <circle cx="60" cy="31" r="3" fill="#2b1a12" />
+
+        @if (Customer.IsVip)
+        {
+            <polygon points="32,16 32,2 42,10 50,-3 58,10 68,2 68,16" fill="#F4B63F" stroke="#2b1a12" stroke-width="3" stroke-linejoin="round" />
+        }
 
         @if (ShowBrows)
         {
