@@ -22,12 +22,12 @@
             <div class="rr-table">
                 @if (customer is not null)
                 {
-                    <CustomerView @key="customer.Id" Customer="customer" OnServe="@(() => ServeTable(table))" />
+                    <CustomerView @key="@($"customer-{customer.Id}")" Customer="customer" OnServe="@(() => ServeTable(table))" />
                 }
 
                 @foreach (var popup in Game.Popups.Where(p => p.Table == table))
                 {
-                    <div @key="popup.Id" class="popup @(popup.IsGood ? "good" : "bad")">
+                    <div @key="@($"popup-{popup.Id}")" class="popup @(popup.IsGood ? "good" : "bad")">
                         @popup.Text
                         @if (popup.SubText is not null)
                         {
@@ -71,12 +71,13 @@
 
         <div class="rr-tray">
             <div class="rr-tray-stage">
+                @* Stage is column-reverse: first child sits at the bottom, so the plate goes first *@
+                <div class="rr-plate"></div>
+                <BurgerStack Layers="Game.Tray" CssClass="tray" />
                 @if (Game.Tray.Count == 0)
                 {
                     <span class="rr-tray-empty">Stack ingredients here</span>
                 }
-                <BurgerStack Layers="Game.Tray" CssClass="tray" />
-                <div class="rr-plate"></div>
             </div>
 
             <div class="rr-tray-bar">
