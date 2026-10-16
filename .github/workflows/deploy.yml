@@ -24,7 +24,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
-          global-json-file: global.json      # Ensure you create a global.json in your new repo
+          global-json-file: '8.0.x'      # Ensure you create a global.json in your new repo
 
       - name: Publish
         run: dotnet publish Dining.csproj -c Release -o release
