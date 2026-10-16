@@ -11,7 +11,7 @@ public sealed class GameEngine
     public const double RoundSeconds = 60;
     public const double TimeBonusSeconds = 1;
     public const double VipTimeBonusSeconds = 5;
-    public const int TableCount = 5;
+    public const int TableCount = 3;
     public const int MaxTrayLayers = 14;
 
     private const double LingerSeconds = 0.8;
