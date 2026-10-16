@@ -1,0 +1,74 @@
+@using System.Globalization
+
+<div class="burst @Burst.Kind.ToString().ToLowerInvariant()" aria-hidden="true">
+    @foreach (var p in _particles)
+    {
+        <span class="pt @p.Css" style="@p.Style">@p.Glyph</span>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public ParticleBurst Burst { get; set; } = default!;
+
+    private sealed record Particle(string Css, string Glyph, string Style);
+
+    private readonly List<Particle> _particles = new();
+
+    private static readonly string[] ConfettiColors =
+        { "#E63E32", "#F4B63F", "#6BA43A", "#2F9C95", "#EF6F9B", "#7B5EA7" };
+
+    private static readonly string[] SmokeColors = { "#cfc6bb", "#b9afa4", "#e6ded2" };
+
+    // Built once per burst (seeded by its id) so re-renders never reshuffle the particles.
+    protected override void OnInitialized()
+    {
+        var rng = new Random(Burst.Id * 7919 + 13);
+        int m = Burst.Big ? 2 : 1;
+
+        switch (Burst.Kind)
+        {
+            case ParticleKind.Delight:
+                for (int i = 0; i < 5 * m; i++) Up(rng, "heart", "♥", i % 2 == 0 ? "#E63E32" : "#EF6F9B", 45, 100);
+                for (int i = 0; i < 4 * m; i++) Up(rng, "star", "★", "#F4B63F", 50, 105);
+                for (int i = 0; i < 7 * m; i++) Up(rng, "conf", "", ConfettiColors[rng.Next(ConfettiColors.Length)], 40, 95);
+                break;
+
+            case ParticleKind.Satisfied:
+                for (int i = 0; i < 4 * m; i++) Up(rng, "spark", "✦", "#C98A10", 28, 62);
+                for (int i = 0; i < 3 * m; i++) Fall(rng, "#6FB7D6");
+                break;
+
+            case ParticleKind.Upset:
+                for (int i = 0; i < 3 * m; i++) Anger(rng);
+                for (int i = 0; i < 6 * m; i++) Fall(rng, "#6FB7D6");
+                break;
+
+            case ParticleKind.Smoke:
+                for (int i = 0; i < 7 * m; i++) Puff(rng);
+                break;
+        }
+    }
+
+    private void Add(string css, string glyph, int dx, int dy, int rot, int delay, string color, int size = 0) =>
+        _particles.Add(new Particle(css, glyph, FormattableString.Invariant(
+            $"--dx:{dx}px;--dy:{dy}px;--rot:{rot}deg;--delay:{delay}ms;--c:{color};--s:{size}px")));
+
+    // Fly out into the upper half-circle, then drop.
+    private void Up(Random rng, string css, string glyph, string color, int minDist, int maxDist)
+    {
+        double angle = rng.Next(-170, -9) * Math.PI / 180;
+        int dist = rng.Next(minDist, maxDist);
+        Add(css, glyph, (int)Math.Round(Math.Cos(angle) * dist), (int)Math.Round(Math.Sin(angle) * dist),
+            rng.Next(-240, 241), rng.Next(0, 120), color);
+    }
+
+    private void Fall(Random rng, string color) =>
+        Add("drop", "", rng.Next(-40, 41), rng.Next(45, 85), 0, rng.Next(0, 250), color);
+
+    private void Anger(Random rng) =>
+        Add("anger", "💢", rng.Next(-45, 46), rng.Next(-90, -45), 0, rng.Next(0, 200), "#E63E32");
+
+    private void Puff(Random rng) =>
+        Add("puff", "", rng.Next(-25, 26), rng.Next(-70, -30), 0, rng.Next(0, 120),
+            SmokeColors[rng.Next(SmokeColors.Length)], rng.Next(22, 40));
+}
