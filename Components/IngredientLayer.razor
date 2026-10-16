@@ -1,0 +1,15 @@
+@* One flat slice of an ingredient. Bun shows as a flat bottom or a domed top. *@
+@{
+    var ing = Ingredient.Get(Type);
+    var kind = Type == IngredientType.Bun
+        ? (IsTop ? "bun-top" : "bun-bottom")
+        : Type.ToString().ToLowerInvariant();
+}
+<div class="layer layer-@kind" style="--c:@ing.Color;--d:@ing.DarkColor"></div>
+
+@code {
+    [Parameter, EditorRequired] public IngredientType Type { get; set; }
+
+    /// <summary>Only matters for buns: the first bun is the bottom, the later one is the top.</summary>
+    [Parameter] public bool IsTop { get; set; }
+}

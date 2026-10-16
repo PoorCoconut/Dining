@@ -1,0 +1,23 @@
+<section class="rr-screen rr-end">
+    <h1 class="rr-end-title">YOUR SCORE</h1>
+    <p class="rr-end-score">@Game.Score</p>
+
+    <p class="rr-end-meta">@Game.ServedCount @(Game.ServedCount == 1 ? "burger" : "burgers") served</p>
+
+    @if (Game.IsNewBest)
+    {
+        <p class="rr-badge">New best!</p>
+    }
+    else if (Game.HighScore > 0)
+    {
+        <p class="rr-end-meta">Best: @Game.HighScore</p>
+    }
+
+    <button type="button" class="btn-play" @onclick="OnPlayAgain">PLAY AGAIN</button>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public GameEngine Game { get; set; } = default!;
+
+    [Parameter] public EventCallback OnPlayAgain { get; set; }
+}

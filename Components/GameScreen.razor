@@ -1,0 +1,101 @@
+@using System.Globalization
+
+<section class="rr-screen rr-game">
+    <header class="rr-hud">
+        <div class="rr-score">SCORE: @Game.Score</div>
+
+        <div class="rr-clock @(Game.TimeLeft <= 10 ? "low" : "")">
+            <div class="rr-clock-row">
+                <span class="rr-clock-num">@Seconds</span>
+                <span class="rr-clock-unit">sec</span>
+            </div>
+            <div class="rr-clock-bar"><div class="rr-clock-fill" style="width:@(TimePercent)%"></div></div>
+        </div>
+    </header>
+
+    <div class="rr-restaurant">
+        @for (int i = 0; i < Game.Tables.Count; i++)
+        {
+            int table = i;
+            var customer = Game.Tables[i];
+
+            <div class="rr-table">
+                @if (customer is not null)
+                {
+                    <CustomerView @key="customer.Id" Customer="customer" OnServe="@(() => ServeTable(table))" />
+                }
+
+                @foreach (var popup in Game.Popups.Where(p => p.Table == table))
+                {
+                    <div @key="popup.Id" class="popup @(popup.IsGood ? "good" : "bad")">
+                        @popup.Text
+                        @if (popup.SubText is not null)
+                        {
+                            <small>@popup.SubText</small>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="rr-kitchen">
+        <div class="rr-bins">
+            @foreach (var ing in Ingredient.All)
+            {
+                var type = ing.Type;
+
+                <button type="button"
+                        class="bin"
+                        style="--c:@ing.Color;--d:@ing.DarkColor"
+                        @onclick="() => Game.AddIngredient(type)"
+                        aria-label="Add @ing.Name">
+                    <span class="bin-pile">
+                        @if (type == IngredientType.Bun)
+                        {
+                            <IngredientLayer Type="IngredientType.Bun" />
+                            <IngredientLayer Type="IngredientType.Bun" IsTop="true" />
+                        }
+                        else
+                        {
+                            @for (int n = 0; n < 3; n++)
+                            {
+                                <IngredientLayer Type="type" />
+                            }
+                        }
+                    </span>
+                    <span class="bin-name">@ing.Name</span>
+                </button>
+            }
+        </div>
+
+        <div class="rr-tray">
+            <div class="rr-tray-stage">
+                @if (Game.Tray.Count == 0)
+                {
+                    <span class="rr-tray-empty">Stack ingredients here</span>
+                }
+                <BurgerStack Layers="Game.Tray" CssClass="tray" />
+                <div class="rr-plate"></div>
+            </div>
+
+            <div class="rr-tray-bar">
+                <button type="button" class="mini-btn" @onclick="Game.UndoIngredient" disabled="@(Game.Tray.Count == 0)">Undo</button>
+                <button type="button" class="mini-btn" @onclick="Game.ClearTray" disabled="@(Game.Tray.Count == 0)">Clear</button>
+            </div>
+
+            <p class="rr-hint">Click a customer to serve</p>
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public GameEngine Game { get; set; } = default!;
+
+    private int Seconds => (int)Math.Ceiling(Game.TimeLeft);
+
+    private string TimePercent =>
+        Math.Min(100, Game.TimeLeft / GameEngine.RoundSeconds * 100).ToString("0.0", CultureInfo.InvariantCulture);
+
+    private void ServeTable(int table) => Game.Serve(table);
+}

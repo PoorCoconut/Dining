@@ -1,0 +1,27 @@
+<section class="rr-screen rr-start">
+    <BurgerStack Layers="HeroBurger" CssClass="hero" />
+
+    <h1 class="rr-title">RESTORUSH</h1>
+
+    <button type="button" class="btn-play" @onclick="OnPlay">PLAY</button>
+
+    <div class="rr-howto">
+        <p><strong>HOW TO PLAY:</strong></p>
+        <p>The game only takes 60 seconds.</p>
+        <p>Customers will appear and take a table. They will display how they want their burgers structured.</p>
+        <p>It is your job to follow the order of the ingredients they want.</p>
+        <p>Each customer has a certain timer.</p>
+        <p>Making a customer happy will increase your time for +1 second, otherwise they will just leave.</p>
+        <p class="rr-howto-last">Try to get a high score at the end of the day!</p>
+    </div>
+</section>
+
+@code {
+    [Parameter] public EventCallback OnPlay { get; set; }
+
+    private static readonly IReadOnlyList<IngredientType> HeroBurger = new[]
+    {
+        IngredientType.Bun, IngredientType.Patty, IngredientType.Cheese, IngredientType.Onion,
+        IngredientType.Tomato, IngredientType.Lettuce, IngredientType.Bun
+    };
+}

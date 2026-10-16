@@ -1,0 +1,67 @@
+@page "/"
+@using System.Diagnostics
+@implements IDisposable
+@inject GameEngine Game
+
+<PageTitle>RESTORUSH</PageTitle>
+
+<div class="rr-app">
+    @switch (Game.Phase)
+    {
+        case GamePhase.Start:
+            <StartScreen OnPlay="StartRound" />
+            break;
+        case GamePhase.Playing:
+            <GameScreen Game="Game" />
+            break;
+        default:
+            <EndScreen Game="Game" OnPlayAgain="StartRound" />
+            break;
+    }
+</div>
+
+@code {
+    private CancellationTokenSource? _cts;
+
+    private void StartRound()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
+        _cts = new CancellationTokenSource();
+
+        Game.Start();
+        _ = RunLoopAsync(_cts.Token);
+    }
+
+    /// <summary>Drives the game clock: ticks the engine 20 times a second and re-renders.</summary>
+    private async Task RunLoopAsync(CancellationToken token)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(50));
+        var clock = Stopwatch.StartNew();
+        var last = clock.Elapsed;
+
+        try
+        {
+            while (await timer.WaitForNextTickAsync(token))
+            {
+                var now = clock.Elapsed;
+                Game.Tick((now - last).TotalSeconds);
+                last = now;
+
+                await InvokeAsync(StateHasChanged);
+
+                if (Game.Phase != GamePhase.Playing) break;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // page left or round restarted
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
+    }
+}

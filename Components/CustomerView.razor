@@ -1,0 +1,74 @@
+@using System.Globalization
+
+<button type="button"
+        class="customer state-@(Customer.State.ToString().ToLowerInvariant())"
+        @onclick="OnServe"
+        aria-label="Serve this customer">
+    <div class="bubble">
+        <BurgerStack Layers="Customer.Order.Layers" CssClass="mini" />
+    </div>
+
+    <svg class="figure" viewBox="0 0 100 128" aria-hidden="true">
+        @if (Customer.Shape == BodyShape.Triangle)
+        {
+            <polygon points="50,62 92,124 8,124" fill="@Customer.BodyColor" stroke="#1d2b24" stroke-width="4" stroke-linejoin="round" />
+        }
+        else
+        {
+            <rect x="12" y="62" width="76" height="62" rx="8" fill="@Customer.BodyColor" stroke="#1d2b24" stroke-width="4" stroke-linejoin="round" />
+        }
+
+        <circle cx="50" cy="34" r="27" fill="@Customer.SkinColor" stroke="#1d2b24" stroke-width="4" />
+        <circle cx="40" cy="31" r="3" fill="#1d2b24" />
+        <circle cx="60" cy="31" r="3" fill="#1d2b24" />
+
+        @if (ShowBrows)
+        {
+            <path d="M33 22 L46 27 M67 22 L54 27" fill="none" stroke="#1d2b24" stroke-width="3.5" stroke-linecap="round" />
+        }
+
+        <path d="@Mouth" fill="none" stroke="#1d2b24" stroke-width="3.5" stroke-linecap="round" />
+
+        @if (Customer.State == CustomerState.Happy)
+        {
+            <circle cx="30" cy="42" r="5" fill="#ff7a8a" opacity=".55" />
+            <circle cx="70" cy="42" r="5" fill="#ff7a8a" opacity=".55" />
+        }
+    </svg>
+
+    <div class="patience" aria-hidden="true">
+        <div class="patience-fill @Tone" style="width:@(Percent)%"></div>
+    </div>
+</button>
+
+@code {
+    [Parameter, EditorRequired] public Customer Customer { get; set; } = default!;
+
+    [Parameter] public EventCallback OnServe { get; set; }
+
+    private bool ShowBrows =>
+        Customer.State == CustomerState.Angry ||
+        (Customer.State == CustomerState.Waiting && Customer.PatienceFraction < 0.25);
+
+    private string Mouth => Customer.State switch
+    {
+        CustomerState.Happy => "M38 41 Q50 54 62 41",
+        CustomerState.Angry => "M40 48 Q50 40 60 48",
+        _ => Customer.PatienceFraction switch
+        {
+            > 0.5 => "M41 43 Q50 49 59 43",
+            > 0.25 => "M42 45 L58 45",
+            _ => "M40 48 Q50 41 60 48"
+        }
+    };
+
+    private string Percent =>
+        (Customer.PatienceFraction * 100).ToString("0.0", CultureInfo.InvariantCulture);
+
+    private string Tone => Customer.PatienceFraction switch
+    {
+        > 0.5 => "ok",
+        > 0.25 => "warn",
+        _ => "danger"
+    };
+}
