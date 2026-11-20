@@ -1,3 +1,6 @@
+@inject Supabase.Client Db
+@using static Supabase.Postgrest.Constants
+
 <section class="rr-screen rr-end">
     <h1 class="rr-end-title">YOUR SCORE</h1>
     <p class="rr-end-score">@Game.Score</p>
@@ -5,13 +8,46 @@
     <p class="rr-end-meta">@Game.ServedCount @(Game.ServedCount == 1 ? "burger" : "burgers") served</p>
 
     @if (Game.IsNewBest)
+
     {
         <p class="rr-badge">New best!</p>
     }
-    else if (Game.HighScore > 0)
+
+    @if (!submitted)
+
     {
-        <p class="rr-end-meta">Best: @Game.HighScore</p>
+        <div class="rr-submit">
+            <input class="rr-name" @bind="playerName" @bind:event="oninput" maxlength="20" placeholder="Your name" />
+            <button type="button" class="btn-small" @onclick="Submit"
+                    disabled="@(saving || string.IsNullOrWhiteSpace(playerName))">
+                Save score
+            </button>
+        </div>
     }
+
+    else
+
+    {
+        <p class="rr-end-meta">Score saved!</p>
+    }
+
+    @if (failed)
+
+    {
+        <p class="rr-end-meta">Couldn't reach the leaderboard.</p>
+    }
+
+    <ol class="rr-board">
+        @foreach (var e in top)
+
+        {
+            <li>
+                <span class="rr-rank">@(top.IndexOf(e) + 1)</span>
+                <span class="rr-pname">@e.PlayerName</span>
+                <span class="rr-pscore">@e.Score</span>
+            </li>
+        }
+    </ol>
 
     <button type="button" class="btn-play" @onclick="OnPlayAgain">PLAY AGAIN</button>
 </section>
@@ -20,4 +56,88 @@
     [Parameter, EditorRequired] public GameEngine Game { get; set; } = default!;
 
     [Parameter] public EventCallback OnPlayAgain { get; set; }
+
+
+
+    private List<LeaderboardEntry> top = new();
+
+    private string playerName = "";
+
+    private bool saving, submitted, failed;
+
+
+
+    protected override async Task OnInitializedAsync() => await Load();
+
+
+
+    private async Task Load()
+
+    {
+
+        try
+
+        {
+
+            var res = await Db.From<LeaderboardEntry>()
+
+                .Where(x => x.DeletedAt == null)            // the database does the filtering
+
+                .Order(x => x.Score, Ordering.Descending)
+
+                .Range(0, 9)                                // top 10
+
+                .Get();                                     // sends GET
+
+            top = res.Models;
+
+            failed = false;
+
+        }
+
+        catch (Exception) { failed = true; }
+
+    }
+
+
+
+    private async Task Submit()
+
+    {
+
+        if (saving || string.IsNullOrWhiteSpace(playerName)) return;
+
+        saving = true;
+
+
+
+        try
+
+        {
+
+            await Db.From<LeaderboardEntry>().Insert(new LeaderboardEntry   // sends POST
+
+                {
+
+                    PlayerName = playerName.Trim(),
+
+                    Score = Game.Score,
+
+                    BurgersServed = Game.ServedCount
+
+                });
+
+            submitted = true;
+
+            await Load();
+
+        }
+
+        catch (Exception) { failed = true; }
+
+
+
+        saving = false;
+
+    }
 }

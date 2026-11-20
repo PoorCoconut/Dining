@@ -1,0 +1,61 @@
+﻿@page "/leaderboard"
+@inject Supabase.Client Db
+@using static Supabase.Postgrest.Constants
+
+<PageTitle>RESTORUSH Leaderboard</PageTitle>
+
+<div class="rr-app">
+    <section class="rr-screen rr-end">
+        <h1 class="rr-end-title">LEADERBOARD</h1>
+
+        <ol class="rr-board">
+            @foreach (var e in items)
+            {
+                <li>
+                    <span class="rr-rank">@(items.IndexOf(e) + 1)</span>
+                    <input class="rr-pname-edit" value="@e.PlayerName" maxlength="20"
+                           @onchange="ev => Rename(e, ev.Value?.ToString())" />
+                    <span class="rr-pscore">@e.Score</span>
+                    <button type="button" class="btn-small" @onclick="() => Remove(e)">Delete</button>
+                </li>
+            }
+        </ol>
+
+        <a class="btn-small" href="">Back to game</a>
+    </section>
+</div>
+
+@code {
+    private List<LeaderboardEntry> items = new();
+
+    protected override async Task OnInitializedAsync() => await Load();
+
+    private async Task Load()
+    {
+        var res = await Db.From<LeaderboardEntry>()
+            .Where(x => x.DeletedAt == null)
+            .Order(x => x.Score, Ordering.Descending)
+            .Range(0, 49)                                   // first 50
+            .Get();
+        items = res.Models;
+    }
+
+    private async Task Rename(LeaderboardEntry e, string? name)      // sends PATCH
+    {
+        if (string.IsNullOrWhiteSpace(name)) return;
+        await Db.From<LeaderboardEntry>()
+            .Where(x => x.Id == e.Id)
+            .Set(x => x.PlayerName, name.Trim())
+            .Update();
+        await Load();
+    }
+
+    private async Task Remove(LeaderboardEntry e)                    // soft delete
+    {
+        await Db.From<LeaderboardEntry>()
+            .Where(x => x.Id == e.Id)
+            .Set(x => x.DeletedAt, DateTime.UtcNow)
+            .Update();
+        await Load();
+    }
+}
