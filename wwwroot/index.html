@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>RESTORUSH</title>
     <base href="/" />
     <meta name="theme-color" content="#ffe3a0" />
@@ -13,6 +13,26 @@
     <link rel="stylesheet" href="css/app.css" />
     <!-- If you add any scoped CSS files, uncomment the following to load them
     <link href="Dining.styles.css" rel="stylesheet" /> -->
+    <script>
+        // RESTORUSH "zoom out" for small screens: the game is laid out as if the screen were
+        // at least MIN_W x MIN_H, then scaled down to fit. Large screens stay at scale 1.
+        (function () {
+            var MIN_W = 960, MIN_H = 600;
+            function fit() {
+                var w = window.innerWidth, h = window.innerHeight;
+                var z = Math.min(1, w / MIN_W, h / MIN_H);
+                var r = document.documentElement.style;
+                r.setProperty('--z', z);
+                r.setProperty('--stage-w', (w / z) + 'px');
+                r.setProperty('--stage-h', (h / z) + 'px');
+                r.setProperty('--vw', (w / z / 100) + 'px');
+                r.setProperty('--vh', (h / z / 100) + 'px');
+            }
+            fit();
+            window.addEventListener('resize', fit);
+            window.addEventListener('orientationchange', fit);
+        })();
+    </script>
 </head>
 
 <body>
