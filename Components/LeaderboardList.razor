@@ -1,0 +1,54 @@
+﻿@inject Supabase.Client Db
+@using static Supabase.Postgrest.Constants
+
+<div class="rr-lb">
+    <h2 class="rr-lb-title">TOP 10</h2>
+
+    @if (loading)
+    {
+        <p class="rr-lb-note">Loading…</p>
+    }
+    else if (failed)
+    {
+        <p class="rr-lb-note">Couldn't reach the leaderboard.</p>
+    }
+    else if (top.Count == 0)
+    {
+        <p class="rr-lb-note">No scores yet. Be the first!</p>
+    }
+    else
+    {
+        <ol class="rr-board">
+            @for (int i = 0; i < top.Count; i++)
+            {
+                var e = top[i];
+                <li>
+                    <span class="rr-rank">@(i + 1)</span>
+                    <span class="rr-pname">@e.PlayerName</span>
+                    <span class="rr-pscore">@e.Score</span>
+                </li>
+            }
+        </ol>
+    }
+</div>
+
+@code {
+    private List<LeaderboardEntry> top = new();
+    private bool loading = true, failed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var res = await Db.From<LeaderboardEntry>()
+                .Where(x => x.DeletedAt == null)
+                .Order(x => x.Score, Ordering.Descending)
+                .Range(0, 9)
+                .Get();
+            top = res.Models;
+        }
+        catch (Exception) { failed = true; }
+
+        loading = false;
+    }
+}
